@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 
 namespace DishesServer.Application.Services;
 
-public class DishesService : IDishService, IIntegrationService
+public class DishesService : IDishService
 {
     private readonly ILogger<DishesService> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
@@ -26,7 +26,7 @@ public class DishesService : IDishService, IIntegrationService
     {
         var dishes = await GetDishesAsync(_cancellationToken);
 
-        if (dishes?.ToList()?.Count > 0)
+        if (dishes.ToList().Count > 0)
         {
             _logger.LogInformation("The number of dishes return where {Count}", dishes.Count);
         }

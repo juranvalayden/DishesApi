@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/1 - Presentation/">
+    <Project Path="DishesApi/DishesApi.csproj" />
+  </Folder>
+  <Folder Name="/2 - Application/">
+    <Project Path="DishApi.Application/DishApi.Application.csproj" Id="7d88f064-ad7c-49dc-9d50-817b856a17bd" />
+  </Folder>
+  <Folder Name="/3 - Infrastructure/">
+    <Project Path="DishesApi.Infrastructure/DishesApi.Infrastructure.csproj" Id="baaac266-48f5-448b-813d-744ce663143c" />
+  </Folder>
+  <Folder Name="/4 - Domain/">
+    <Project Path="DishesApi.Domain/DishesApi.Domain.csproj" Id="cd583b4f-8956-4e58-abdb-fc8f6217f6f2" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+</Solution>

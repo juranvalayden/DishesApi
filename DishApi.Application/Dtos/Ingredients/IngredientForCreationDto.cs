@@ -1,0 +1,13 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DishApi.Application.Dtos.Ingredients;
+
+public class IngredientForCreationDto
+{
+    [Required]
+    [MaxLength(200)]
+    public required string Name { get; set; }
+
+    [Required] 
+    public Guid DishId { get; set; }
+}

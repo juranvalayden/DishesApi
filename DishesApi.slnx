@@ -1,15 +1,29 @@
 <Solution>
-  <Folder Name="/1 - Presentation/">
+  <Folder Name="/Client/" />
+  <Folder Name="/Client/1 - Presentation/">
     <Project Path="DishesApi/DishesApi.csproj" />
   </Folder>
-  <Folder Name="/2 - Application/">
+  <Folder Name="/Client/2 - Application/">
     <Project Path="DishApi.Application/DishApi.Application.csproj" Id="7d88f064-ad7c-49dc-9d50-817b856a17bd" />
   </Folder>
-  <Folder Name="/3 - Infrastructure/">
+  <Folder Name="/Client/3 - Infrastructure/">
     <Project Path="DishesApi.Infrastructure/DishesApi.Infrastructure.csproj" Id="baaac266-48f5-448b-813d-744ce663143c" />
   </Folder>
-  <Folder Name="/4 - Domain/">
+  <Folder Name="/Client/4 - Domain/">
     <Project Path="DishesApi.Domain/DishesApi.Domain.csproj" Id="cd583b4f-8956-4e58-abdb-fc8f6217f6f2" />
+  </Folder>
+  <Folder Name="/Server/" />
+  <Folder Name="/Server/1 - Presentation/">
+    <Project Path="DishesServer.Presentation/DishesServer.Presentation.csproj" Id="ff84d810-bc9a-4800-93c9-e22f1d5f15a7" />
+  </Folder>
+  <Folder Name="/Server/2 - Application/">
+    <Project Path="DishesServer.Application/DishesServer.Application.csproj" Id="24a7b2b3-b550-4510-a6c3-7176aa73b9b5" />
+  </Folder>
+  <Folder Name="/Server/3 - Infrastructure/">
+    <Project Path="DishesServer.Infrastructure/DishesServer.Infrastructure.csproj" Id="9aa52f48-0b0a-497a-b480-a92db618a65c" />
+  </Folder>
+  <Folder Name="/Server/4 - Domain/">
+    <Project Path="DishesServer.Domain/DishesServer.Domain.csproj" Id="c5cdb93f-4e46-4f94-ab66-9ce3f147d042" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />

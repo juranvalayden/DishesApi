@@ -5,6 +5,6 @@ namespace DishApi.Application.Dtos.Dishes;
 public class DishForCreationDto
 {
     [Required]
-    [MaxLength(200)]
+    [StringLength(100, MinimumLength = 3)]
     public required string Name { get; set; }
 }

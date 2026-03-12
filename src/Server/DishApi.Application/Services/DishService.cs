@@ -1,8 +1,7 @@
-﻿using AutoMapper;
-using DishApi.Application.Dtos.Dishes;
+﻿using DishApi.Application.Dtos.Dishes;
 using DishApi.Application.Dtos.Ingredients;
 using DishApi.Application.Interfaces;
-using DishesApi.Domain.Entities;
+using DishApi.Application.Mappers;
 using DishesApi.Domain.Interfaces;
 
 namespace DishApi.Application.Services;
@@ -10,24 +9,24 @@ namespace DishApi.Application.Services;
 public class DishService : IDishService
 {
     private readonly IDishRepository _dishRepository;
-    private readonly IMapper _mapper;
 
-    public DishService(IDishRepository dishRepository, IMapper mapper)
+    public DishService(IDishRepository dishRepository)
     {
         _dishRepository = dishRepository ?? throw new ArgumentNullException(nameof(dishRepository));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public async Task<IEnumerable<DishDto>> GetDishesAsync(bool shouldIncludeIngredients = false)
     {
         var dishes = await _dishRepository.GetDishesAsync(shouldIncludeIngredients);
-        return _mapper.Map<IEnumerable<DishDto>>(dishes);
+
+        return DishesMapper.MapDtos(dishes);
     }
 
     public async Task<IEnumerable<DishDto>> GetDishesByNameAsync(string name, bool shouldIncludeIngredients = false)
     {
         var dishes = await _dishRepository.GetDishesByNameAsync(name, shouldIncludeIngredients);
-        return _mapper.Map<IEnumerable<DishDto>>(dishes);
+
+        return DishesMapper.MapDtos(dishes);
     }
 
     public async Task<DishDto?> GetDishByIdAsync(Guid id, bool shouldIncludeIngredients = false)
@@ -35,20 +34,20 @@ public class DishService : IDishService
         var dish = await _dishRepository.GetDishByIdAsync(id, shouldIncludeIngredients);
 
         return dish != null
-            ? _mapper.Map<DishDto>(dish)
+            ? DishesMapper.MapDto(dish)
             : null;
     }
 
     public async Task<DishDto?> AddDishAsync(DishForCreationDto dishForCreationDto)
     {
-        var dish = _mapper.Map<Dish>(dishForCreationDto);
+        var dish = DishesMapper.MapEntity(dishForCreationDto);
 
         _dishRepository.AddDish(dish);
 
         var hasSaved = await _dishRepository.SaveChangesAsync();
 
         return hasSaved 
-            ? _mapper.Map<DishDto>(dish) 
+            ? DishesMapper.MapDto(dish)
             : null;
     }
 
@@ -58,14 +57,14 @@ public class DishService : IDishService
 
         if (existingDish == null) return null;
 
-        var dish = _mapper.Map(dishForUpdateDto, existingDish);
-
+        var dish = DishesMapper.MapEntity(dishForUpdateDto, existingDish);
+        
         _dishRepository.UpdateDish(dish);
 
         var hasSaved =  await _dishRepository.SaveChangesAsync();
 
         return hasSaved
-            ? _mapper.Map<DishDto>(dish)
+            ? DishesMapper.MapDto(dish)
             : null;
     }
 
@@ -83,6 +82,6 @@ public class DishService : IDishService
     public async Task<IEnumerable<IngredientDto>> GetIngredientsAsync(Guid dishId)
     {
         var ingredients = await _dishRepository.GetIngredientsAsync(dishId);
-        return _mapper.Map<IEnumerable<IngredientDto>>(ingredients);
+        return DishesMapper.MapEntities(ingredients);
     }
 }

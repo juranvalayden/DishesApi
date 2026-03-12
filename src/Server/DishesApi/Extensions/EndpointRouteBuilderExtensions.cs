@@ -1,51 +1,65 @@
-﻿using DishApi.Application.Handlers;
+﻿using DishApi.Application.Dtos.Dishes;
+using DishApi.Application.Handlers;
 using DishesApi.EndpointFilters;
 
 namespace DishesApi.Extensions;
 
 public static class EndpointRouteBuilderExtensions
 {
-    public static void RegisterDishesEndpoints(this IEndpointRouteBuilder endpointRouteBuilder)
+    extension(IEndpointRouteBuilder endpointRouteBuilder)
     {
-        var dishesEndpoints = endpointRouteBuilder.MapGroup("/dishes");
-
-        dishesEndpoints
-            .MapGet("", DishesHandlers.GetDishesAsync);
-
-        dishesEndpoints
-            .MapGet("/{dishName}", DishesHandlers.GetDishByNameAsync);
-
-        dishesEndpoints
-            .MapPost("", DishesHandlers.CreateDishAsync)
-            .AddEndpointFilter<ValidateAnnotationsFilter>();
-
-        var dishWithGuidIdEndpoints = dishesEndpoints.MapGroup("/{dishId:guid}");
-
-        dishWithGuidIdEndpoints
-            .MapGet("", DishesHandlers.GetDishByIdAsync)
-            .WithName("GetDish");
-
-        dishWithGuidIdEndpoints
-            .MapPut("", DishesHandlers.UpdateDishAsync)
-            .AddEndpointFilter<DishIsLockedFilter>();
-        
-        dishWithGuidIdEndpoints
-            .MapDelete("", DishesHandlers.DeleteDishAsync)
-            .AddEndpointFilter<LogNotFoundResponseFilter>();
-    }
-
-    public static void RegisterIngredientsEndpoints(this IEndpointRouteBuilder endpointRouteBuilder)
-    {
-        var ingredientsEndpoints = endpointRouteBuilder
-            .MapGroup("/dishes/{dishId:guid}/ingredients");
-
-        ingredientsEndpoints
-            .MapGet("", IngredientsHandlers.GetIngredientsAsync);
-
-        ingredientsEndpoints
-            .MapPost("", () =>
+        public void RegisterDishesEndpoints()
         {
-            throw new NotImplementedException();
-        });
+            var dishesEndpoints = endpointRouteBuilder
+                .MapGroup("/dishes")
+                .RequireAuthorization();
+
+            var dishWithGuidIdEndpoints = dishesEndpoints
+                .MapGroup("/{dishId:guid}");
+
+            var dishWithGuidIdEndpointsAndLockFilters = endpointRouteBuilder
+                .MapGroup("/dishes/{dishId:guid}")
+                .RequireAuthorization("RequireAdminFromBelgium")
+                .AddEndpointFilter(new DishIsLockedFilter(new Guid("fd630a57-2352-4731-b25c-db9cc7601b16")))
+                .AddEndpointFilter(new DishIsLockedFilter(new Guid("eacc5169-b2a7-41ad-92c3-dbb1a5e7af06")));
+
+            dishesEndpoints.MapGet("", DishesHandlers.GetDishesAsync);
+
+            dishWithGuidIdEndpoints
+                .MapGet("", DishesHandlers.GetDishByIdAsync)
+                .WithName("GetDish")
+                .WithSummary("Get a dish by providing an id.")
+                .WithDescription(
+                    "Dishes are identified by a URI containing a dish identifier. This identifier is a GUID. You can get one specific dish via this endpoint by providing the identifier. ");
+
+            dishesEndpoints
+                .MapGet("/{dishName}", DishesHandlers.GetDishByNameAsync)
+                .AllowAnonymous();
+
+            dishesEndpoints
+                .MapPost("", DishesHandlers.CreateDishAsync)
+                .RequireAuthorization("RequireAdminFromBelgium")
+                .AddEndpointFilter<ValidateAnnotationsFilter>()
+                .ProducesValidationProblem()
+                .Accepts<DishForCreationDto>("application/json", "application/vnd.marvin.dishforcreation+json");
+
+            dishWithGuidIdEndpointsAndLockFilters.MapPut("", DishesHandlers.UpdateDishAsync);
+
+            dishWithGuidIdEndpointsAndLockFilters
+                .MapDelete("", DishesHandlers.DeleteDishAsync)
+                .AddEndpointFilter<LogNotFoundResponseFilter>();
+        }
+
+        public void RegisterIngredientsEndpoints()
+        {
+            var ingredientsEndpoints = endpointRouteBuilder.MapGroup("/dishes/{dishId:guid}/ingredients").RequireAuthorization();
+
+            ingredientsEndpoints.MapGet("", IngredientsHandlers.GetIngredientsAsync);
+
+            ingredientsEndpoints.MapPost("", () =>
+            {
+                throw new NotImplementedException();
+            });
+        }
     }
 }

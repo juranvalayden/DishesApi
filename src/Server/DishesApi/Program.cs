@@ -8,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
+builder.Services.AddAuthentication().AddJwtBearer();
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 // configure the http request pipeline
@@ -19,6 +22,9 @@ app.UseExceptionHandler(applicationBuilder => applicationBuilder.Run(async conte
 }));
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.RegisterDishesEndpoints();
 app.RegisterIngredientsEndpoints();

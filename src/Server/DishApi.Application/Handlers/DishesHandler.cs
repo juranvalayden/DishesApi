@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using DishApi.Application.Dtos.Dishes;
+﻿using DishApi.Application.Dtos.Dishes;
 using DishApi.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -9,14 +8,15 @@ namespace DishApi.Application.Handlers;
 
 public static class DishesHandlers
 {
-    public static async Task<Ok<IEnumerable<DishDto>>> GetDishesAsync(IDishService dishService, ClaimsPrincipal claimsPrincipal, IMapper mapper, string? name)
+    public static async Task<Ok<IEnumerable<DishDto>>> GetDishesAsync(IDishService dishService, ClaimsPrincipal claimsPrincipal, string? name)
     {
         Console.WriteLine($"User authenticated? {claimsPrincipal.Identity?.IsAuthenticated}");
 
         if (string.IsNullOrWhiteSpace(name))
         {
             var dishes = await dishService.GetDishesAsync(true);
-            return TypedResults.Ok(mapper.Map<IEnumerable<DishDto>>(dishes));
+
+            return TypedResults.Ok(dishes);
         }
 
         var dishesFilteredByName = await dishService.GetDishesByNameAsync(name);
@@ -24,25 +24,26 @@ public static class DishesHandlers
         return TypedResults.Ok(dishesFilteredByName);
     }
 
-    public static async Task<Results<NotFound, Ok<DishDto>>> GetDishByIdAsync(IDishService dishService, IMapper mapper, Guid dishId)
+    public static async Task<Results<NotFound, Ok<DishDto>>> GetDishByIdAsync(IDishService dishService, Guid dishId)
     {
-        var dishEntity = await dishService.GetDishByIdAsync(dishId);
+        var dishDto = await dishService.GetDishByIdAsync(dishId);
 
-        if (dishEntity == null)
+        if (dishDto == null)
         {
             return TypedResults.NotFound();
         }
 
-        return TypedResults.Ok(dishEntity);
+        return TypedResults.Ok(dishDto);
     }
 
-    public static async Task<Ok<DishDto>> GetDishByNameAsync(IDishService dishService, IMapper mapper, string dishName)
+    public static async Task<Ok<DishDto>> GetDishByNameAsync(IDishService dishService, string dishName)
     {
-        var dish = await dishService.GetDishesByNameAsync(dishName);
-        return TypedResults.Ok(dish.FirstOrDefault());
+        var dishDtos = await dishService.GetDishesByNameAsync(dishName);
+
+        return TypedResults.Ok(dishDtos.FirstOrDefault());
     }
 
-    public static async Task<Results<CreatedAtRoute<DishDto>, BadRequest>> CreateDishAsync(IDishService dishService, IMapper mapper, DishForCreationDto dishForCreationDto)
+    public static async Task<Results<CreatedAtRoute<DishDto>, BadRequest>> CreateDishAsync(IDishService dishService, DishForCreationDto dishForCreationDto)
     {
         var dishToReturn = await dishService.AddDishAsync(dishForCreationDto);
 
@@ -57,7 +58,7 @@ public static class DishesHandlers
             });
     }
 
-    public static async Task<Results<NotFound, NoContent, BadRequest>> UpdateDishAsync(IDishService dishService, IMapper mapper, Guid dishId, DishForUpdateDto dishForUpdateDto)
+    public static async Task<Results<NotFound, NoContent, BadRequest>> UpdateDishAsync(IDishService dishService, Guid dishId, DishForUpdateDto dishForUpdateDto)
     {
         var dishToReturn = await dishService.UpdateDishAsync(dishId, dishForUpdateDto);
 

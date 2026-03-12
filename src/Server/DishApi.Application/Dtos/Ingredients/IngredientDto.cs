@@ -8,7 +8,7 @@ public class IngredientDto
     public Guid Id { get; set; }
 
     [Required]
-    [MaxLength(200)]
+    [StringLength(200), MinLength(3)]
     public required string Name { get; set; }
 
     public Guid DishId { get; set; }

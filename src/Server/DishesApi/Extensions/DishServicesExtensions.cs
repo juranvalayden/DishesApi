@@ -5,20 +5,21 @@ namespace DishesApi.Extensions;
 
 public static class DishServicesExtensions
 {
-    public static void RegisterDbContexts(this IApplicationBuilder builder)
+    extension(IApplicationBuilder builder)
     {
-        var serviceScopeFactory = builder
-            .ApplicationServices
-            .GetRequiredService<IServiceScopeFactory>();
+        public void RegisterDbContexts()
+        {
+            var serviceScopeFactory = builder.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
 
-        using var scopeFactory = serviceScopeFactory?.CreateScope() 
-                                 ?? throw new InvalidOperationException("Cannot access the service scope");
+            using var scope = serviceScopeFactory.CreateScope()
+                              ?? throw new InvalidOperationException("Cannot access the service scope");
 
-        var provider = scopeFactory.ServiceProvider
-                       ?? throw new InvalidOperationException("Cannot access the service provider.");
+            var serviceProvider = scope.ServiceProvider
+                                  ?? throw new InvalidOperationException("Cannot access the service provider.");
 
-        var context = provider.GetRequiredService<DishesDbContext>();
-        context.Database.EnsureDeleted();
-        context.Database.Migrate();
+            var context = serviceProvider.GetRequiredService<DishesDbContext>();
+            context.Database.EnsureDeleted();
+            context.Database.Migrate();
+        }
     }
 }

@@ -8,10 +8,6 @@ public static class DependencyInjection
 {
     public static void AddApplication(this IServiceCollection serviceCollection)
     {
-        var assembliesToScan = AppDomain.CurrentDomain.GetAssemblies();
-
-        serviceCollection.AddAutoMapper(cfg => { cfg.AddMaps(assembliesToScan); });
-
         serviceCollection.AddScoped<IDishService, DishService>();
     }
 }
